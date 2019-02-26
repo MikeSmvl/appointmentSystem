@@ -1,5 +1,5 @@
-const Slot = require('../models/slot');
-const Appointment = require('../models/appointment');
+const Slot = require('../../models/slot');
+const Appointment = require('../../models/appointment');
 
 const appointmentController = {
   all(req, res) {
