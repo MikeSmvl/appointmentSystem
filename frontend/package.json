@@ -6,6 +6,7 @@
     "axios": "^0.18.0",
     "chart.js": "^1.1.1",
     "material-ui": "^0.20.2",
+    "moment": "^2.20.1",
     "react": "^16.7.0",
     "react-chartjs": "^1.2.0",
     "react-dom": "^16.7.0",
@@ -19,7 +20,16 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "rules": {
+      "no-unused-expressions": [
+        "error",
+        {
+          "allowShortCircuit": true,
+          "allowTernary": true
+        }
+      ]
+    }
   },
   "browserslist": [
     ">0.2%",
