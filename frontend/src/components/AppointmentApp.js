@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import AppBar from "material-ui/AppBar";
 import RaisedButton from "material-ui/RaisedButton";
 import FlatButton from "material-ui/FlatButton";
@@ -187,6 +188,7 @@ class AppointmentApp extends Component {
       </section>
     );
   }
+
   renderAppointmentTimes() {
     if (!this.state.isLoading) {
       const slots = [...Array(12).keys()];
@@ -255,8 +257,6 @@ class AppointmentApp extends Component {
     );
   }
 
-
-
   render() {
     const {
       finished,
@@ -299,10 +299,7 @@ class AppointmentApp extends Component {
     ];
     return (
       <div>
-        <AppBar
-          title="Appointment Scheduler"
-          iconClassNameRight="muidocs-icon-navigation-expand-more"
-        />
+        <MuiThemeProvider>
         <section
           style={{
             maxWidth: !smallScreen ? "80%" : "100%",
@@ -455,6 +452,7 @@ class AppointmentApp extends Component {
             }
           />
         </section>
+      </MuiThemeProvider>
       </div>
     );
   }
