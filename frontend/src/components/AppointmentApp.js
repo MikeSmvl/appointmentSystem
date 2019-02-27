@@ -189,17 +189,17 @@ class AppointmentApp extends Component {
   }
   renderAppointmentTimes() {
     if (!this.state.isLoading) {
-      const slots = [...Array(8).keys()];
+      const slots = [...Array(12).keys()];
       return slots.map(slot => {
         const appointmentDateString = moment(this.state.appointmentDate).format(
           "YYYY-DD-MM"
         );
         const time1 = moment()
-          .hour(9)
+          .hour(8)
           .minute(0)
           .add(slot, "hours");
         const time2 = moment()
-          .hour(9)
+          .hour(8)
           .minute(0)
           .add(slot + 1, "hours");
         const scheduleDisabled = this.state.schedule[appointmentDateString]
