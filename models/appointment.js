@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 const appointmentSchema = new Schema({
   id: Schema.Types.ObjectId,
+  type: String,
   name: String,
   email: String,
   phone: Number,

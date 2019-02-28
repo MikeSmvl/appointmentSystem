@@ -34,6 +34,7 @@ class AppointmentApp extends Component {
       confirmationModalOpen: false,
       appointmentDateSelected: false,
       appointmentMeridiem: 0,
+      appointmentType: "hello",
       validEmail: true,
       validPhone: true,
       finished: false,
@@ -50,7 +51,12 @@ class AppointmentApp extends Component {
   handleSetAppointmentDate(date) {
     this.setState({ appointmentDate: date, confirmationTextVisible: true });
   }
-
+  handleSetAppointmentType(type) {
+    this.setState({ appointmentType: type });
+  }
+  handleGetAppointmentType() {
+    return this.state.appointmentType;
+  }
   handleSetAppointmentSlot(slot) {
     this.setState({ appointmentSlot: slot });
   }
@@ -63,6 +69,7 @@ class AppointmentApp extends Component {
       name: this.state.firstName + " " + this.state.lastName,
       email: this.state.email,
       phone: this.state.phone,
+      type: this.state.appointmentType,
       slot_date: moment(this.state.appointmentDate).format("YYYY-DD-MM"),
       slot_time: this.state.appointmentSlot
     };
@@ -88,7 +95,7 @@ class AppointmentApp extends Component {
     const { stepIndex } = this.state;
     this.setState({
       stepIndex: stepIndex + 1,
-      finished: stepIndex >= 2
+      finished: stepIndex >= 3
     });
   };
 
@@ -98,18 +105,21 @@ class AppointmentApp extends Component {
       this.setState({ stepIndex: stepIndex - 1 });
     }
   };
+
   validateEmail(email) {
     const regex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
     return regex.test(email)
       ? this.setState({ email: email, validEmail: true })
       : this.setState({ validEmail: false });
   }
+
   validatePhone(phoneNumber) {
     const regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
     return regex.test(phoneNumber)
       ? this.setState({ phone: phoneNumber, validPhone: true })
       : this.setState({ validPhone: false });
   }
+
   checkDisableDate(day) {
     const dateString = moment(day).format("YYYY-DD-MM");
     return (
@@ -119,7 +129,6 @@ class AppointmentApp extends Component {
         .diff(moment().startOf("day")) < 0
     );
   }
-
 
   handleDBReponse(response) {
     const appointments = response;
@@ -164,6 +173,9 @@ class AppointmentApp extends Component {
           </span>
         </p>
         <p>
+          Type: <span style={spanStyle}>{this.state.appointmentType}</span>
+        </p>
+        <p>
           Number: <span style={spanStyle}>{this.state.phone}</span>
         </p>
         <p>
@@ -177,56 +189,117 @@ class AppointmentApp extends Component {
             )}
           </span>{" "}
           at{" "}
-          <span style={spanStyle}>
-            {moment()
-              .hour(9)
-              .minute(0)
-              .add(this.state.appointmentSlot, "hours")
-              .format("h:mm a")}
-          </span>
+          {this.getAppointmentTime()}
         </p>
       </section>
     );
   }
 
+  getAppointmentTime() {
+    const spanStyle = { color: "#00C853" };
+    var slot = this.state.appointmentSlot;
+    if (this.state.appointmentType == "Non-Urgent") {
+      return (
+        <span style={spanStyle}>
+            {moment()
+              .hour(8)
+              .minute(0)
+              .add(slot * 20, "minutes")
+              .format("h:mm a")}
+        </span>
+      );
+    } else if (this.state.appointmentType == "Annual") {
+      return (
+        <span style={spanStyle}>
+            {moment()
+              .hour(8)
+              .minute(0)
+              .add(slot, "hours")
+              .format("h:mm a")}
+        </span>
+      );
+    }
+  }
+
   renderAppointmentTimes() {
-    if (!this.state.isLoading) {
-      const slots = [...Array(12).keys()];
-      return slots.map(slot => {
-        const appointmentDateString = moment(this.state.appointmentDate).format(
-          "YYYY-DD-MM"
-        );
-        const time1 = moment()
+    if (this.state.appointmentType == "Non-Urgent") {
+      if (!this.state.isLoading) {
+        const slots = [...Array(36).keys()];
+        return slots.map(slot => {
+          const appointmentDateString = moment(this.state.appointmentDate).format(
+            "YYYY-DD-MM"
+          );
+          const time1 = moment()
+          .hour(8)
+          .minute(0)
+          .add(slot * 20, "minutes");
+          const time2 = moment()
+          .hour(8)
+          .minute(0)
+          .add((slot * 20) + 20, "minutes");
+          const scheduleDisabled = this.state.schedule[appointmentDateString]
+          ? this.state.schedule[
+            moment(this.state.appointmentDate).format("YYYY-DD-MM")
+          ][slot]
+          : false;
+          const meridiemDisabled = this.state.appointmentMeridiem
+          ? time1.format("a") === "am"
+          : time1.format("a") === "pm";
+          return (
+            <RadioButton
+              label={time1.format("h:mm a") + " - " + time2.format("h:mm a")}
+              key={slot}
+              value={slot}
+              style={{
+                marginBottom: 15,
+                display: meridiemDisabled ? "none" : "inherit"
+              }}
+              disabled={scheduleDisabled || meridiemDisabled}
+              />
+          );
+        });
+      } else {
+        return null;
+      }
+    } else if (this.state.appointmentType == "Annual"){
+      if (!this.state.isLoading) {
+        const slots = [...Array(12).keys()];
+        return slots.map(slot => {
+          const appointmentDateString = moment(this.state.appointmentDate).format(
+            "YYYY-DD-MM"
+          );
+          const time1 = moment()
           .hour(8)
           .minute(0)
           .add(slot, "hours");
-        const time2 = moment()
+          const time2 = moment()
           .hour(8)
           .minute(0)
           .add(slot + 1, "hours");
-        const scheduleDisabled = this.state.schedule[appointmentDateString]
+          const scheduleDisabled = this.state.schedule[appointmentDateString]
           ? this.state.schedule[
-              moment(this.state.appointmentDate).format("YYYY-DD-MM")
-            ][slot]
+            moment(this.state.appointmentDate).format("YYYY-DD-MM")
+          ][slot]
           : false;
-        const meridiemDisabled = this.state.appointmentMeridiem
+          const meridiemDisabled = this.state.appointmentMeridiem
           ? time1.format("a") === "am"
           : time1.format("a") === "pm";
-        return (
-          <RadioButton
-            label={time1.format("h:mm a") + " - " + time2.format("h:mm a")}
-            key={slot}
-            value={slot}
-            style={{
-              marginBottom: 15,
-              display: meridiemDisabled ? "none" : "inherit"
-            }}
-            disabled={scheduleDisabled || meridiemDisabled}
-          />
-        );
-      });
-    } else {
-      return null;
+          return (
+            <RadioButton
+              label={time1.format("h:mm a") + " - " + time2.format("h:mm a")}
+              key={slot}
+              value={slot}
+              style={{
+                marginBottom: 15,
+                display: meridiemDisabled ? "none" : "inherit"
+              }}
+              disabled={scheduleDisabled || meridiemDisabled}
+              />
+          );
+        });
+      } else {
+        return null;
+      }
     }
   }
 
@@ -236,7 +309,7 @@ class AppointmentApp extends Component {
     return (
       <div style={{ margin: "12px 0" }}>
         <RaisedButton
-          label={stepIndex === 2 ? "Finish" : "Next"}
+          label={stepIndex === 3 ? "Finish" : "Next"}
           disableTouchRipple={true}
           disableFocusRipple={true}
           primary={true}
@@ -318,13 +391,31 @@ class AppointmentApp extends Component {
               orientation="vertical"
               linear={false}
             >
+            <Step>
+              <StepLabel>
+                Choose an appointment type
+              </StepLabel>
+              <StepContent>
+                <SelectField
+                  floatingLabelText="Type"
+                  value={data.appointmentType}
+                  onChange={(evt, key, newValue) =>
+                    this.handleSetAppointmentType(newValue)
+                  }
+                >
+                  <MenuItem value={"Non-Urgent"} primaryText="Non-Urgent" />
+                  <MenuItem value={"Annual"} primaryText="Annual Checkup" />
+                </SelectField>
+                {this.renderStepActions(0)}
+              </StepContent>
+            </Step>
               <Step>
                 <StepLabel>
                   Choose an available day for your appointment
                 </StepLabel>
                 <StepContent>
                   {DatePickerExampleSimple()}
-                  {this.renderStepActions(0)}
+                  {this.renderStepActions(1)}
                 </StepContent>
               </Step>
               <Step disabled={!data.appointmentDate}>
@@ -359,8 +450,7 @@ class AppointmentApp extends Component {
               </Step>
               <Step>
                 <StepLabel>
-                  Share your contact information with us and we'll send you a
-                  reminder
+                  Enter patient information
                 </StepLabel>
                 <StepContent>
                   <p>

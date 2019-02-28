@@ -19,6 +19,7 @@ const appointmentController = {
     var newappointment = new Appointment({
       name: requestBody.name,
       email: requestBody.email,
+      type: requestBody.type,
       phone: requestBody.phone,
       slots: newslot._id
     });
