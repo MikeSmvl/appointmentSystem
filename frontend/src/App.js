@@ -8,8 +8,6 @@ import MainNavigation from './components/Navigation/MainNavigation';
 import AuthContext from './context/auth-context';
 import BookPage from './components/AppointmentApp';
 
-import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-
 import './App.css';
 
 class App extends Component {

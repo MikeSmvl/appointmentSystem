@@ -1,5 +1,6 @@
 const Slot = require('../../models/slot');
 const Appointment = require('../../models/appointment');
+const Patient = require('../../models/patient');
 
 const appointmentController = {
   all(req, res) {
@@ -8,7 +9,6 @@ const appointmentController = {
   },
   create(req, res) {
     var requestBody = req.body;
-
     var newslot = new Slot({
       slot_time: requestBody.slot_time,
       slot_date: requestBody.slot_date,
@@ -17,25 +17,12 @@ const appointmentController = {
     newslot.save();
     // Creates a new record from a submitted form
     var newappointment = new Appointment({
-      name: requestBody.name,
-      email: requestBody.email,
       type: requestBody.type,
-      phone: requestBody.phone,
       slots: newslot._id
     });
-
-    let msg =
-      requestBody.name +
-      " " +
-      "this message is to confirm your appointment at" +
-      " " +
-      requestBody.appointment;
-
-    // and saves the record to
-    // the data base
+    // and saves the record to the data base
     newappointment.save((err, saved) => {
-      // Returns the saved appointment
-      // after a successful save
+      // Returns the saved appointment after a successful save
       Appointment.find({ _id: saved._id })
         .populate("slots")
         .exec((err, appointment) => res.json(appointment));

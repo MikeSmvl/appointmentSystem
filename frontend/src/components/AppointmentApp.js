@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-import AppBar from "material-ui/AppBar";
 import RaisedButton from "material-ui/RaisedButton";
 import FlatButton from "material-ui/FlatButton";
 import moment from "moment";
@@ -27,26 +26,16 @@ class AppointmentApp extends Component {
     super(props, context);
 
     this.state = {
-      firstName: "",
-      lastName: "",
-      email: "",
       schedule: [],
+      hcn: "",
       confirmationModalOpen: false,
       appointmentDateSelected: false,
       appointmentMeridiem: 0,
       appointmentType: "hello",
-      validEmail: true,
-      validPhone: true,
       finished: false,
       smallScreen: window.innerWidth < 768,
       stepIndex: 0
     };
-  }
-  componentWillMount() {
-    axios.get(API_BASE + `api/retrieveSlots`).then(response => {
-      console.log("response via db: ", response.data);
-      this.handleDBReponse(response.data);
-    });
   }
   handleSetAppointmentDate(date) {
     this.setState({ appointmentDate: date, confirmationTextVisible: true });
@@ -66,9 +55,6 @@ class AppointmentApp extends Component {
   handleSubmit() {
     this.setState({ confirmationModalOpen: false });
     const newAppointment = {
-      name: this.state.firstName + " " + this.state.lastName,
-      email: this.state.email,
-      phone: this.state.phone,
       type: this.state.appointmentType,
       slot_date: moment(this.state.appointmentDate).format("YYYY-DD-MM"),
       slot_time: this.state.appointmentSlot
@@ -106,20 +92,6 @@ class AppointmentApp extends Component {
     }
   };
 
-  validateEmail(email) {
-    const regex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-    return regex.test(email)
-      ? this.setState({ email: email, validEmail: true })
-      : this.setState({ validEmail: false });
-  }
-
-  validatePhone(phoneNumber) {
-    const regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
-    return regex.test(phoneNumber)
-      ? this.setState({ phone: phoneNumber, validPhone: true })
-      : this.setState({ validPhone: false });
-  }
-
   checkDisableDate(day) {
     const dateString = moment(day).format("YYYY-DD-MM");
     return (
@@ -130,56 +102,15 @@ class AppointmentApp extends Component {
     );
   }
 
-  handleDBReponse(response) {
-    const appointments = response;
-    const today = moment().startOf("day"); //start of today 12 am
-    const initialSchedule = {};
-    initialSchedule[today.format("YYYY-DD-MM")] = true;
-    const schedule = !appointments.length
-      ? initialSchedule
-      : appointments.reduce((currentSchedule, appointment) => {
-          const { slot_date, slot_time } = appointment;
-          const dateString = moment(slot_date, "YYYY-DD-MM").format(
-            "YYYY-DD-MM"
-          );
-          return !currentSchedule[slot_date]
-            ? (currentSchedule[dateString] = Array(8).fill(false))
-            : null;
-          return Array.isArray(currentSchedule[dateString])
-            ? (currentSchedule[dateString][slot_time] = true)
-            : null;
-          return currentSchedule;
-        }, initialSchedule);
-
-    for (let day in schedule) {
-      let slots = schedule[day];
-      return slots.length
-        ? slots.every(slot => slot === true) ? (schedule[day] = true) : null
-        : null;
-    }
-
-    this.setState({
-      schedule: schedule
-    });
-  }
   renderAppointmentConfirmation() {
     const spanStyle = { color: "#00C853" };
     return (
       <section>
         <p>
-          Name:{" "}
-          <span style={spanStyle}>
-            {this.state.firstName} {this.state.lastName}
-          </span>
-        </p>
-        <p>
           Type: <span style={spanStyle}>{this.state.appointmentType}</span>
         </p>
         <p>
-          Number: <span style={spanStyle}>{this.state.phone}</span>
-        </p>
-        <p>
-          Email: <span style={spanStyle}>{this.state.email}</span>
+          Health Care Number: <span style={spanStyle}>{this.state.hcn}</span>
         </p>
         <p>
           Appointment:{" "}
@@ -198,7 +129,7 @@ class AppointmentApp extends Component {
   getAppointmentTime() {
     const spanStyle = { color: "#00C853" };
     var slot = this.state.appointmentSlot;
-    if (this.state.appointmentType == "Non-Urgent") {
+    if (this.state.appointmentType === "Non-Urgent") {
       return (
         <span style={spanStyle}>
             {moment()
@@ -208,7 +139,7 @@ class AppointmentApp extends Component {
               .format("h:mm a")}
         </span>
       );
-    } else if (this.state.appointmentType == "Annual") {
+    } else if (this.state.appointmentType === "Annual") {
       return (
         <span style={spanStyle}>
             {moment()
@@ -222,7 +153,7 @@ class AppointmentApp extends Component {
   }
 
   renderAppointmentTimes() {
-    if (this.state.appointmentType == "Non-Urgent") {
+    if (this.state.appointmentType === "Non-Urgent") {
       if (!this.state.isLoading) {
         const slots = [...Array(36).keys()];
         return slots.map(slot => {
@@ -261,7 +192,7 @@ class AppointmentApp extends Component {
       } else {
         return null;
       }
-    } else if (this.state.appointmentType == "Annual"){
+    } else if (this.state.appointmentType === "Annual"){
       if (!this.state.isLoading) {
         const slots = [...Array(12).keys()];
         return slots.map(slot => {
@@ -340,13 +271,7 @@ class AppointmentApp extends Component {
       confirmationSnackbarOpen,
       ...data
     } = this.state;
-    const contactFormFilled =
-      data.firstName &&
-      data.lastName &&
-      data.phone &&
-      data.email &&
-      data.validPhone &&
-      data.validEmail;
+    const contactFormFilled = data.hcn;
     const DatePickerExampleSimple = () => (
       <div>
         <DatePicker
@@ -457,52 +382,19 @@ class AppointmentApp extends Component {
                     <section>
                       <TextField
                         style={{ display: "block" }}
-                        name="first_name"
-                        hintText="First Name"
-                        floatingLabelText="First Name"
+                        name="hcn"
+                        hintText="Health Care Number"
+                        floatingLabelText="Health Care Number"
                         onChange={(evt, newValue) =>
-                          this.setState({ firstName: newValue })
-                        }
-                      />
-                      <TextField
-                        style={{ display: "block" }}
-                        name="last_name"
-                        hintText="Last Name"
-                        floatingLabelText="Last Name"
-                        onChange={(evt, newValue) =>
-                          this.setState({ lastName: newValue })
-                        }
-                      />
-                      <TextField
-                        style={{ display: "block" }}
-                        name="email"
-                        hintText="youraddress@mail.com"
-                        floatingLabelText="Email"
-                        errorText={
-                          data.validEmail ? null : "Enter a valid email address"
-                        }
-                        onChange={(evt, newValue) =>
-                          this.validateEmail(newValue)
-                        }
-                      />
-                      <TextField
-                        style={{ display: "block" }}
-                        name="phone"
-                        hintText="+2348995989"
-                        floatingLabelText="Phone"
-                        errorText={
-                          data.validPhone ? null : "Enter a valid phone number"
-                        }
-                        onChange={(evt, newValue) =>
-                          this.validatePhone(newValue)
+                          this.setState({ hcn: newValue })
                         }
                       />
                       <RaisedButton
-                        style={{ display: "block", backgroundColor: "#00C853" }}
+                        style={{ display: "block", backgroundColor: "#00C853", marginTop: 20, maxWidth: 100 }}
                         label={
                           contactFormFilled
                             ? "Schedule"
-                            : "Fill out your information to schedule"
+                            : "Fill out your information"
                         }
                         labelPosition="before"
                         primary={true}
@@ -514,7 +406,6 @@ class AppointmentApp extends Component {
                           })
                         }
                         disabled={!contactFormFilled || data.processed}
-                        style={{ marginTop: 20, maxWidth: 100 }}
                       />
                     </section>
                   </p>
