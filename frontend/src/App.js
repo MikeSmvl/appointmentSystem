@@ -6,7 +6,7 @@ import BookingsPage from './pages/Bookings';
 import EventsPage from './pages/Events';
 import MainNavigation from './components/Navigation/MainNavigation';
 import AuthContext from './context/auth-context';
-import BookPage from './components/AppointmentApp';
+import BookPage from './pages/Book';
 
 import './App.css';
 
