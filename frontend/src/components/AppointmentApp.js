@@ -57,7 +57,8 @@ class AppointmentApp extends Component {
     const newAppointment = {
       type: this.state.appointmentType,
       slot_date: moment(this.state.appointmentDate).format("YYYY-DD-MM"),
-      slot_time: this.state.appointmentSlot
+      slot_time: this.state.appointmentSlot,
+      hcn: this.state.hcn
     };
     axios
       .post(API_BASE + "api/appointmentCreate", newAppointment)
