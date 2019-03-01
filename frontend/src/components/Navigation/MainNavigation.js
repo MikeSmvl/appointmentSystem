@@ -10,7 +10,9 @@ const mainNavigation = props => (
       return (
         <header className="main-navigation">
           <div className="main-navigation__logo">
+            <NavLink to="/" style={{ textDecoration: 'none' }}>
             <h1>Uber Santé</h1>
+            </NavLink>
           </div>
           <nav className="main-navigation__items">
             <ul>
