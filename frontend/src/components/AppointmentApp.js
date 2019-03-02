@@ -31,7 +31,7 @@ class AppointmentApp extends Component {
       confirmationModalOpen: false,
       appointmentDateSelected: false,
       appointmentMeridiem: 0,
-      appointmentType: "hello",
+      appointmentType: "",
       finished: false,
       smallScreen: window.innerWidth < 768,
       stepIndex: 0
@@ -42,9 +42,6 @@ class AppointmentApp extends Component {
   }
   handleSetAppointmentType(type) {
     this.setState({ appointmentType: type });
-  }
-  handleGetAppointmentType() {
-    return this.state.appointmentType;
   }
   handleSetAppointmentSlot(slot) {
     this.setState({ appointmentSlot: slot });

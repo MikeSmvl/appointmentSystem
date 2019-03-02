@@ -5,7 +5,7 @@ module.exports = buildSchema(`
   type Appointment {
     _id: ID!
     type: String!
-    slots: [Slot!]
+    slots: Slot
   }
 
   type Slot {
@@ -83,6 +83,7 @@ module.exports = buildSchema(`
       bookings: [Booking!]!
       login(email: String!, password: String!): AuthData!
       appointments: [Appointment!]!
+      slots: [Slot!]!
       patients: [Patient!]!
   }
 

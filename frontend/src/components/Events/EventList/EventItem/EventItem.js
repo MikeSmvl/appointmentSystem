@@ -11,13 +11,9 @@ const eventItem = props => (
       </h2>
     </div>
     <div>
-      {props.userId === props.creatorId ? (
-        <p>Your the owner of this event.</p>
-      ) : (
-        <button className="btn" onClick={props.onDetail.bind(this, props.eventId)}>
-          View Details
-        </button>
-      )}
+      <button className="btn" onClick={props.onDetail.bind(this, props.eventId)}>
+        View Details
+      </button>
     </div>
   </li>
 );

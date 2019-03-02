@@ -1,7 +1,7 @@
 {
-  "name": "graphql-react-appointment-booking",
+  "name": "mercedes",
   "version": "1.0.0",
-  "description": "",
+  "description": "A medical reservation web application for SOEN 344",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
