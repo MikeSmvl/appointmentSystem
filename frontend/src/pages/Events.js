@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Modal from '../components/Modal/Modal';
 import Backdrop from '../components/Backdrop/Backdrop';
-import EventList from '../components/Events/EventList/EventList';
+import AppointmentList from '../components/Events/EventList/AppointmentList';
 import Spinner from '../components/Spinner/Spinner';
 import AuthContext from '../context/auth-context';
 import './Events.css';
@@ -10,9 +10,9 @@ import './Events.css';
 class EventsPage extends Component {
   state = {
     creating: false,
-    events: [],
+    appointments: [],
     isLoading: false,
-    selectedEvent: null
+    selectedAppointment: null
   };
   isActive = true;
 
@@ -27,7 +27,7 @@ class EventsPage extends Component {
   }
 
   componentDidMount() {
-    this.fetchEvents();
+    this.fetchAppointments();
   }
 
   startCreateEventHandler = () => {
@@ -111,23 +111,20 @@ class EventsPage extends Component {
   };
 
   modalCancelHandler = () => {
-    this.setState({ creating: false, selectedEvent: null });
+    this.setState({ creating: false, selectedAppointment: null });
   };
 
-  fetchEvents() {
+  fetchAppointments() {
     this.setState({ isLoading: true });
     const requestBody = {
       query: `
           query {
-            events {
+            appointments {
               _id
-              title
-              description
-              date
-              price
-              creator {
-                _id
-                email
+              type
+              slots {
+                slot_time
+                slot_date
               }
             }
           }
@@ -148,9 +145,9 @@ class EventsPage extends Component {
         return res.json();
       })
       .then(resData => {
-        const events = resData.data.events;
+        const appointments = resData.data.appointments;
         if (this.isActive) {
-          this.setState({ events: events, isLoading: false });
+          this.setState({ appointments: appointments, isLoading: false });
         }
       })
       .catch(err => {
@@ -161,10 +158,10 @@ class EventsPage extends Component {
       });
   }
 
-  showDetailHandler = eventId => {
+  showDetailHandler = appointmentId => {
     this.setState(prevState => {
-      const selectedEvent = prevState.events.find(e => e._id === eventId);
-      return { selectedEvent: selectedEvent };
+      const selectedAppointment = prevState.appointments.find(a => a._id === appointmentId);
+      return { selectedAppointment: selectedAppointment };
     });
   };
 
@@ -253,21 +250,20 @@ class EventsPage extends Component {
             </form>
           </Modal>
         )}
-        {this.state.selectedEvent && (
+        {this.state.selectedAppointment && (
           <Modal
-            title={this.state.selectedEvent.title}
+            title={this.state.selectedAppointment.type}
             canCancel
             canConfirm
             onCancel={this.modalCancelHandler}
             onConfirm={this.bookEventHandler}
             confirmText={this.context.token ? 'Book' : 'Confirm'}
           >
-            <h1>{this.state.selectedEvent.title}</h1>
+            <h1>{this.state.selectedAppointment.type}</h1>
             <h2>
-              ${this.state.selectedEvent.price} -{' '}
-              {new Date(this.state.selectedEvent.date).toLocaleDateString()}
+              {this.state.selectedAppointment._id}
             </h2>
-            <p>{this.state.selectedEvent.description}</p>
+            <p>{this.state.selectedAppointment.type}</p>
           </Modal>
         )}
         {this.context.token && (
@@ -281,8 +277,8 @@ class EventsPage extends Component {
         {this.state.isLoading ? (
           <Spinner />
         ) : (
-          <EventList
-            events={this.state.events}
+          <AppointmentList
+            appointments={this.state.appointments}
             authUserId={this.context.userId}
             onViewDetail={this.showDetailHandler}
           />
