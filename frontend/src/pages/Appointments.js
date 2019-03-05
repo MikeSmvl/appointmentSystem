@@ -14,14 +14,14 @@ class AppointmentsPage extends Component {
     appointments: [],
     isLoading: false,
     selectedAppointment: null,
-    healthCareNumber: ""
+    healthCareNumber: "12345678910"
   };
   isActive = true;
 
   static contextType = AuthContext;
 
   componentDidMount() {
-    this.fetchAppointments();
+    this.fetchAppointments2();
   }
 
   startCreateEventHandler = () => {
@@ -64,6 +64,58 @@ class AppointmentsPage extends Component {
       })
       .then(resData => {
         const appointments = resData.data.appointments;
+        if (this.isActive) {
+          this.setState({ appointments: appointments, isLoading: false });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        if (this.isActive) {
+          this.setState({ isLoading: false });
+        }
+      });
+  }
+
+  fetchAppointments2() {
+    this.setState({ isLoading: true });
+    const requestBody = {
+      query: `
+          query {
+            patients {
+              _id
+              hcn
+              createdAppointments {
+                _id
+                type
+                slots {
+                  slot_time
+                  slot_date
+                }
+              }
+            }
+          }
+        `
+    };
+
+    fetch('http://localhost:8000/graphql', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Failed!');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        function isSelectedPatient(patient) {
+          return patient.hcn === this.state.healthCareNumber;
+        }
+        const index = resData.data.patients.findIndex(isSelectedPatient);
+        const appointments = resData.data.patients[index].createdAppointments;
         if (this.isActive) {
           this.setState({ appointments: appointments, isLoading: false });
         }
@@ -130,7 +182,7 @@ class AppointmentsPage extends Component {
               <TextField
                 fullWidth={true}
                 hintText="Enter Health Care Number"
-                onChange={(evt, newValue) => this.handleSetHCN(newValue)}
+                onChange={(evt, newValue) => {this.handleSetHCN(newValue); this.fetchAppointments2();}}
               />
             </div>
           </MuiThemeProvider>
