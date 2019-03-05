@@ -14,7 +14,7 @@ class AppointmentsPage extends Component {
     appointments: [],
     isLoading: false,
     selectedAppointment: null,
-    healthCareNumber: "12345678910"
+    healthCareNumber: ""
   };
   isActive = true;
 
@@ -111,8 +111,9 @@ class AppointmentsPage extends Component {
         return res.json();
       })
       .then(resData => {
+        const givenHCN = this.state.healthCareNumber;
         function isSelectedPatient(patient) {
-          return patient.hcn === this.state.healthCareNumber;
+          return patient.hcn === givenHCN;
         }
         const index = resData.data.patients.findIndex(isSelectedPatient);
         const appointments = resData.data.patients[index].createdAppointments;
