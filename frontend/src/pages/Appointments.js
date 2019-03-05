@@ -6,7 +6,6 @@ import Spinner from '../components/Spinner/Spinner';
 import AuthContext from '../context/auth-context';
 import './Appointments.css';
 import TextField from "material-ui/TextField";
-import FlatButton from "material-ui/FlatButton";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 
 class AppointmentsPage extends Component {
