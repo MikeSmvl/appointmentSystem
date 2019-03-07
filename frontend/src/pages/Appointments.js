@@ -183,7 +183,7 @@ class AppointmentsPage extends Component {
               <TextField
                 fullWidth={true}
                 hintText="Enter Health Care Number"
-                onChange={(evt, newValue) => {this.handleSetHCN(newValue); this.fetchAppointments2();}}
+                onChange={(evt, newValue) => {this.handleSetHCN(newValue.replace(/\s/g, '')); this.fetchAppointments2();}}
               />
             </div>
           </MuiThemeProvider>
