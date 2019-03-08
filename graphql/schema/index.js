@@ -93,6 +93,7 @@ module.exports = buildSchema(`
       createPatient(patientInput: PatientInput): Patient
       bookEvent(eventId: ID!): Booking!
       cancelBooking(bookingId: ID!): Event!
+      cancelAppointment(appointmentId: ID!): Boolean!
   }
 
   schema {

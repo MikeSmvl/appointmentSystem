@@ -14,6 +14,9 @@ const appointmentItem = props => (
       <button className="btn" onClick={props.onDetail.bind(this, props.appointmentId)}>
         View Details
       </button>
+      <button className="btn" onClick={props.onDelete.bind(this, props.appointmentId)}>
+        Cancel
+      </button>
     </div>
   </li>
 );

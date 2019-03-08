@@ -129,6 +129,47 @@ class AppointmentsPage extends Component {
       });
   }
 
+  deleteAppointmentHandler = appointmentId => {
+    this.setState({ isLoading: true });
+    const requestBody = {
+      query: `
+          mutation CancelAppointment($id: ID!) {
+            cancelAppointment(appointmentId: $id)
+          }
+        `,
+      variables: {
+        id: appointmentId
+      }
+    };
+
+    fetch('http://localhost:8000/graphql', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.context.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Failed!');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        this.setState(prevState => {
+          const updatedAppointments = prevState.appointments.filter(appointment => {
+            return appointment._id !== appointmentId;
+          });
+          return { appointments: updatedAppointments, isLoading: false };
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({ isLoading: false });
+      });
+  };
+
   showDetailHandler = appointmentId => {
     this.setState(prevState => {
       const selectedAppointment = prevState.appointments.find(a => a._id === appointmentId);
@@ -195,6 +236,7 @@ class AppointmentsPage extends Component {
             appointments={this.state.appointments}
             authUserId={this.context.userId}
             onViewDetail={this.showDetailHandler}
+            onCancel={this.deleteAppointmentHandler}
           />
         )}
       </React.Fragment>
