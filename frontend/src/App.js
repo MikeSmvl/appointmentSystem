@@ -7,6 +7,7 @@ import AppointmentsPage from './pages/Appointments';
 import MainNavigation from './components/Navigation/MainNavigation';
 import AuthContext from './context/auth-context';
 import BookPage from './pages/Book';
+import DoctorPage from './pages/Doctor';
 
 import './App.css';
 
@@ -50,6 +51,7 @@ class App extends Component {
                   )}
                   <Route path="/events" component={AppointmentsPage} />
                   <Route path="/book" component={BookPage} />
+                  <Route path="/schedule" component={DoctorPage} />
                   {this.state.token && (
                     <Route path="/bookings" component={BookingsPage} />
                   )}
