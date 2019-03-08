@@ -7,7 +7,7 @@ const appointmentItem = props => (
     <div>
       <h1>{props._id}</h1>
       <h2>
-        {props.type}
+        {props.type} Appointment
       </h2>
     </div>
     <div>

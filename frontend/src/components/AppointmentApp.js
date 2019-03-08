@@ -390,7 +390,7 @@ class AppointmentApp extends Component {
                         hintText="Health Care Number"
                         floatingLabelText="Health Care Number"
                         onChange={(evt, newValue) =>
-                          this.setState({ hcn: newValue })
+                          this.setState({ hcn: newValue.replace(/\s/g, '') })
                         }
                       />
                       <RaisedButton
