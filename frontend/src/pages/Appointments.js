@@ -21,7 +21,11 @@ class AppointmentsPage extends Component {
   static contextType = AuthContext;
 
   componentDidMount() {
-    this.fetchAppointments2();
+    if (this.context.token) {
+      this.fetchAppointmentsNurse();
+    } else {
+    this.fetchAppointments();
+    }
   }
 
   startCreateEventHandler = () => {
@@ -32,17 +36,21 @@ class AppointmentsPage extends Component {
     this.setState({ creating: false, selectedAppointment: null });
   };
 
-  fetchAppointments() {
+  fetchAppointmentsNurse() {
     this.setState({ isLoading: true });
     const requestBody = {
       query: `
           query {
-            appointments {
+            patients {
               _id
-              type
-              slots {
-                slot_time
-                slot_date
+              hcn
+              createdAppointments {
+                _id
+                type
+                slots {
+                  slot_time
+                  slot_date
+                }
               }
             }
           }
@@ -63,7 +71,19 @@ class AppointmentsPage extends Component {
         return res.json();
       })
       .then(resData => {
-        const appointments = resData.data.appointments;
+        const givenHCN = this.state.healthCareNumber;
+        function isSelectedPatient(patient) {
+          return patient.hcn === givenHCN;
+        }
+        const index = resData.data.patients.findIndex(isSelectedPatient);
+        var appointments = [];
+        if (givenHCN === "") {
+          resData.data.patients.forEach(function(patient){
+            appointments.push(patient.createdAppointments);
+          });
+        } else {
+          appointments = resData.data.patients[index].createdAppointments;
+        }
         if (this.isActive) {
           this.setState({ appointments: appointments, isLoading: false });
         }
@@ -76,7 +96,7 @@ class AppointmentsPage extends Component {
       });
   }
 
-  fetchAppointments2() {
+  fetchAppointments() {
     this.setState({ isLoading: true });
     const requestBody = {
       query: `
@@ -224,7 +244,7 @@ class AppointmentsPage extends Component {
               <TextField
                 fullWidth={true}
                 hintText="Enter Health Care Number"
-                onChange={(evt, newValue) => {this.handleSetHCN(newValue.replace(/\s/g, '')); this.fetchAppointments2();}}
+                onChange={(evt, newValue) => {this.handleSetHCN(newValue.replace(/\s/g, '')); this.fetchAppointments();}}
               />
             </div>
           </MuiThemeProvider>
