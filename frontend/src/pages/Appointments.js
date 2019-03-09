@@ -40,21 +40,17 @@ class AppointmentsPage extends Component {
     this.setState({ isLoading: true });
     const requestBody = {
       query: `
-          query {
-            patients {
-              _id
-              hcn
-              createdAppointments {
-                _id
-                type
-                slots {
-                  slot_time
-                  slot_date
-                }
-              }
-            }
+      query {
+        appointments {
+          _id
+          type
+          slots {
+            slot_time
+            slot_date
           }
-        `
+        }
+      }
+      `
     };
 
     fetch('http://localhost:8000/graphql', {
@@ -71,19 +67,7 @@ class AppointmentsPage extends Component {
         return res.json();
       })
       .then(resData => {
-        const givenHCN = this.state.healthCareNumber;
-        function isSelectedPatient(patient) {
-          return patient.hcn === givenHCN;
-        }
-        const index = resData.data.patients.findIndex(isSelectedPatient);
-        var appointments = [];
-        if (givenHCN === "") {
-          resData.data.patients.forEach(function(patient){
-            appointments.push(patient.createdAppointments);
-          });
-        } else {
-          appointments = resData.data.patients[index].createdAppointments;
-        }
+        const appointments = resData.data.appointments;
         if (this.isActive) {
           this.setState({ appointments: appointments, isLoading: false });
         }
@@ -232,9 +216,7 @@ class AppointmentsPage extends Component {
             confirmText={this.context.token ? 'Book' : 'Confirm'}
           >
             <h1>This is an {this.state.selectedAppointment.type} appointment</h1>
-            <p>
-              The date of the appointment is {this.state.selectedAppointment.slots.slot_date}
-            </p>
+            <p>The date of the appointment is {this.state.selectedAppointment.slots.slot_date}</p>
             {this.returnTime()}
           </Modal>
         )}
