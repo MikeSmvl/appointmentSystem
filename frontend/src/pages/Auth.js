@@ -93,22 +93,25 @@ class AuthPage extends Component {
 
   render() {
     return (
-      <form className="auth-form" onSubmit={this.submitHandler}>
-        <div className="form-control">
-          <label htmlFor="email">Access ID</label>
-          <input pattern="[a-zA-Z]{3}\d{5}" type="text" id="email" ref={this.emailEl} />
-        </div>
-        <div className="form-control">
-          <label htmlFor="password">Password</label>
-          <input type="password" id="password" ref={this.passwordEl} />
-        </div>
-        <div className="form-actions">
-          <button type="submit">Submit</button>
-          <button type="button" onClick={this.switchModeHandler}>
-            Switch to {this.state.isLogin ? 'Signup' : 'Login'}
-          </button>
-        </div>
-      </form>
+      <React.Fragment>
+        <img class="image" src="http://www.metacare.ca/livesite/uploads/2014/08/nurse-image-lg.jpg" alt="clinic" />
+        <form className="auth-form" onSubmit={this.submitHandler}>
+          <div className="form-control">
+            <label htmlFor="email">Access ID</label>
+            <input pattern="[a-zA-Z]{3}\d{5}" type="text" id="email" ref={this.emailEl} />
+          </div>
+          <div className="form-control">
+            <label htmlFor="password">Password</label>
+            <input type="password" id="password" ref={this.passwordEl} />
+          </div>
+          <div className="form-actions">
+            <button type="submit">Submit</button>
+            <button type="button" onClick={this.switchModeHandler}>
+              Switch to {this.state.isLogin ? 'Signup' : 'Login'}
+            </button>
+          </div>
+        </form>
+      </React.Fragment>
     );
   }
 }

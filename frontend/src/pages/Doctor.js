@@ -7,7 +7,7 @@ class DoctorPage extends Component {
   render() {
     return (
         <React.Fragment>
-          <img class="image" src="http://www.medicinaperu.com/_images/user_4/ww/custom/HBR87040_medicina_2.jpg" alt="clinic" />
+          <img class="image" src="https://tauglobal.com/wp-content/uploads/2018/05/doctors-and-densist.png" alt="clinic" />
           <AppointmentApp></AppointmentApp>
         </React.Fragment>
     );
