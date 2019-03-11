@@ -22,7 +22,7 @@ const appointmentController = {
       var annual = await patient.createdAppointments.find(function(appointment) {
         return appointment.type === "Annual";
       });
-      if(annual) {
+      if(annual && requestBody.type === "Annual") {
         throw new Error('Annual appointment exists')
       }
       const slot = await Slot.find({ 'slot_time': requestBody.slot_time, 'slot_date': requestBody.slot_date });
