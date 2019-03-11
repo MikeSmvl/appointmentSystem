@@ -27,7 +27,7 @@ class AppointmentApp extends Component {
 
         this.state = {
             schedule: [],
-            hcn: "",
+            pm: "",
             confirmationModalOpen: false,
             appointmentDateSelected: false,
             appointmentMeridiem: 0,
@@ -55,7 +55,7 @@ class AppointmentApp extends Component {
             type: this.state.appointmentType,
             slot_date: moment(this.state.appointmentDate).format("YYYY-DD-MM"),
             slot_time: this.state.appointmentSlot,
-            hcn: this.state.hcn
+            pm: this.state.pm
         };
         axios
             .post(API_BASE + "api/appointmentCreate", newAppointment)
@@ -108,7 +108,7 @@ class AppointmentApp extends Component {
                     Type: <span style={spanStyle}>{this.state.appointmentType}</span>
                 </p>
                 <p>
-                    Health Care Number: <span style={spanStyle}>{this.state.hcn}</span>
+                    Permit Number: <span style={spanStyle}>{this.state.pm}</span>
                 </p>
                 <p>
                     Appointment:{" "}
@@ -120,12 +120,6 @@ class AppointmentApp extends Component {
                     at{" "}
                     {this.getAppointmentTime()}
                 </p>
-                <TextField
-                    style={{ display: "block" }}
-                    name="cc"
-                    hintText="Credit Card Number"
-                    floatingLabelText="Credit Card Number"
-                />
             </section>
         );
     }
@@ -133,17 +127,6 @@ class AppointmentApp extends Component {
     getAppointmentTime() {
         const spanStyle = { color: "#00C853" };
         var slot = this.state.appointmentSlot;
-        if (this.state.appointmentType === "Non-Urgent") {
-            return (
-                <span style={spanStyle}>
-            {moment()
-                .hour(8)
-                .minute(0)
-                .add(slot * 20, "minutes")
-                .format("h:mm a")}
-        </span>
-            );
-        } else if (this.state.appointmentType === "Annual") {
             return (
                 <span style={spanStyle}>
             {moment()
@@ -153,50 +136,9 @@ class AppointmentApp extends Component {
                 .format("h:mm a")}
         </span>
             );
-        }
     }
 
     renderAppointmentTimes() {
-        if (this.state.appointmentType === "Non-Urgent") {
-            if (!this.state.isLoading) {
-                const slots = [...Array(36).keys()];
-                return slots.map(slot => {
-                    const appointmentDateString = moment(this.state.appointmentDate).format(
-                        "YYYY-DD-MM"
-                    );
-                    const time1 = moment()
-                        .hour(8)
-                        .minute(0)
-                        .add(slot * 20, "minutes");
-                    const time2 = moment()
-                        .hour(8)
-                        .minute(0)
-                        .add((slot * 20) + 20, "minutes");
-                    const scheduleDisabled = this.state.schedule[appointmentDateString]
-                        ? this.state.schedule[
-                            moment(this.state.appointmentDate).format("YYYY-DD-MM")
-                            ][slot]
-                        : false;
-                    const meridiemDisabled = this.state.appointmentMeridiem
-                        ? time1.format("a") === "am"
-                        : time1.format("a") === "pm";
-                    return (
-                        <RadioButton
-                            label={time1.format("h:mm a") + " - " + time2.format("h:mm a")}
-                            key={slot}
-                            value={slot}
-                            style={{
-                                marginBottom: 15,
-                                display: meridiemDisabled ? "none" : "inherit"
-                            }}
-                            disabled={scheduleDisabled || meridiemDisabled}
-                        />
-                    );
-                });
-            } else {
-                return null;
-            }
-        } else if (this.state.appointmentType === "Annual"){
             if (!this.state.isLoading) {
                 const slots = [...Array(12).keys()];
                 return slots.map(slot => {
@@ -235,7 +177,6 @@ class AppointmentApp extends Component {
             } else {
                 return null;
             }
-        }
     }
 
     renderStepActions(step) {
@@ -275,7 +216,7 @@ class AppointmentApp extends Component {
             confirmationSnackbarOpen,
             ...data
         } = this.state;
-        const contactFormFilled = data.hcn;
+        const contactFormFilled = data.pm;
         const DatePickerExampleSimple = () => (
             <div>
                 <DatePicker
@@ -322,25 +263,7 @@ class AppointmentApp extends Component {
                             >
                                 <Step>
                                     <StepLabel>
-                                        Choose an appointment type
-                                    </StepLabel>
-                                    <StepContent>
-                                        <SelectField
-                                            floatingLabelText="Type"
-                                            value={data.appointmentType}
-                                            onChange={(evt, key, newValue) =>
-                                                this.handleSetAppointmentType(newValue)
-                                            }
-                                        >
-                                            <MenuItem value={"Non-Urgent"} primaryText="Non-Urgent" />
-                                            <MenuItem value={"Annual"} primaryText="Annual Checkup" />
-                                        </SelectField>
-                                        {this.renderStepActions(0)}
-                                    </StepContent>
-                                </Step>
-                                <Step>
-                                    <StepLabel>
-                                        Choose an available day for your appointment
+                                        Choose the day you will be unavailable
                                     </StepLabel>
                                     <StepContent>
                                         {DatePickerExampleSimple()}
@@ -349,7 +272,7 @@ class AppointmentApp extends Component {
                                 </Step>
                                 <Step disabled={!data.appointmentDate}>
                                     <StepLabel>
-                                        Choose an available time for your appointment
+                                        Choose the time you will be unavailable
                                     </StepLabel>
                                     <StepContent>
                                         <SelectField
@@ -379,18 +302,18 @@ class AppointmentApp extends Component {
                                 </Step>
                                 <Step>
                                     <StepLabel>
-                                        Enter patient information
+                                        Enter your physician identification
                                     </StepLabel>
                                     <StepContent>
                                         <p>
                                             <section>
                                                 <TextField
                                                     style={{ display: "block" }}
-                                                    name="hcn"
-                                                    hintText="Health Care Number"
-                                                    floatingLabelText="Health Care Number"
+                                                    name="pm"
+                                                    hintText="Permit Number "
+                                                    floatingLabelText="Permit Number"
                                                     onChange={(evt, newValue) =>
-                                                        this.setState({ hcn: newValue.replace(/\s/g, '') })
+                                                        this.setState({ pm: newValue.replace(/\s/g, '') })
                                                     }
                                                 />
                                                 <RaisedButton
