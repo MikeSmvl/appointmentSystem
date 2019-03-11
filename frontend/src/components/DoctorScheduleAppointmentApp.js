@@ -31,7 +31,6 @@ class AppointmentApp extends Component {
             confirmationModalOpen: false,
             appointmentDateSelected: false,
             appointmentMeridiem: 0,
-            appointmentType: "",
             finished: false,
             smallScreen: window.innerWidth < 768,
             stepIndex: 0
@@ -39,9 +38,6 @@ class AppointmentApp extends Component {
     }
     handleSetAppointmentDate(date) {
         this.setState({ appointmentDate: date, confirmationTextVisible: true });
-    }
-    handleSetAppointmentType(type) {
-        this.setState({ appointmentType: type });
     }
     handleSetAppointmentSlot(slot) {
         this.setState({ appointmentSlot: slot });
@@ -52,16 +48,16 @@ class AppointmentApp extends Component {
     handleSubmit() {
         this.setState({ confirmationModalOpen: false });
         const newAppointment = {
-            type: this.state.appointmentType,
+            type: "Doctor Schedule",
             slot_date: moment(this.state.appointmentDate).format("YYYY-DD-MM"),
             slot_time: this.state.appointmentSlot,
             pm: this.state.pm
         };
         axios
-            .post(API_BASE + "api/appointmentCreate", newAppointment)
+            .post(API_BASE + "api/scheduleCreate", newAppointment)
             .then(response =>
                 this.setState({
-                    confirmationSnackbarMessage: "Appointment succesfully added!",
+                    confirmationSnackbarMessage: "Unavailability succesfully added!",
                     confirmationSnackbarOpen: true,
                     processed: true
                 })
@@ -69,7 +65,7 @@ class AppointmentApp extends Component {
             .catch(err => {
                 console.log(err);
                 return this.setState({
-                    confirmationSnackbarMessage: "Appointment failed to save.",
+                    confirmationSnackbarMessage: "Unavailability failed to save.",
                     confirmationSnackbarOpen: true
                 });
             });
@@ -105,13 +101,10 @@ class AppointmentApp extends Component {
         return (
             <section>
                 <p>
-                    Type: <span style={spanStyle}>{this.state.appointmentType}</span>
-                </p>
-                <p>
                     Permit Number: <span style={spanStyle}>{this.state.pm}</span>
                 </p>
                 <p>
-                    Appointment:{" "}
+                    Unavailable:{" "}
                     <span style={spanStyle}>
             {moment(this.state.appointmentDate).format(
                 "dddd[,] MMMM Do[,] YYYY"
@@ -234,7 +227,7 @@ class AppointmentApp extends Component {
                 onClick={() => this.setState({ confirmationModalOpen: false })}
             />,
             <FlatButton
-                label="Buy"
+                label="Confirm Unavailability"
                 style={{ backgroundColor: "#00C853 !important" }}
                 primary={true}
                 onClick={() => this.handleSubmit()}
@@ -345,7 +338,7 @@ class AppointmentApp extends Component {
                             modal={true}
                             open={confirmationModalOpen}
                             actions={modalActions}
-                            title="Cart"
+                            title="Finish Schedule"
                         >
                             {this.renderAppointmentConfirmation()}
                         </Dialog>
