@@ -19,6 +19,12 @@ const appointmentController = {
       if (!patient) {
         throw new Error('Patient not found.');
       }
+      var annual = await patient.createdAppointments.find(function(appointment) {
+        return appointment.type === "Annual";
+      });
+      if(annual) {
+        throw new Error('Annual appointment exists')
+      }
       const slot = await Slot.find({ 'slot_time': requestBody.slot_time, 'slot_date': requestBody.slot_date });
       if (slot.length > 4) {
         throw new Error('Fully booked on date/time');
