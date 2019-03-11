@@ -24,7 +24,7 @@ class AuthPage extends Component {
 
   submitHandler = event => {
     event.preventDefault();
-    const email = this.emailEl.current.value;
+    const email = this.emailEl.current.value.toUpperCase();
     const password = this.passwordEl.current.value;
 
     if (email.trim().length === 0 || password.trim().length === 0) {
@@ -105,10 +105,7 @@ class AuthPage extends Component {
             <input type="password" id="password" ref={this.passwordEl} />
           </div>
           <div className="form-actions">
-            <button type="submit">Submit</button>
-            <button type="button" onClick={this.switchModeHandler}>
-              Switch to {this.state.isLogin ? 'Signup' : 'Login'}
-            </button>
+            <button type="submit">Login</button>
           </div>
         </form>
       </React.Fragment>
