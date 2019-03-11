@@ -24,7 +24,7 @@ const mainNavigation = props => (
               </li>
               {!context.token && (
                 <li>
-                  <NavLink to="/schedule">Update Schedule</NavLink>
+                  <NavLink to="/schedule">Doctor Schedule</NavLink>
                 </li>
               )}
               {!context.token && (
